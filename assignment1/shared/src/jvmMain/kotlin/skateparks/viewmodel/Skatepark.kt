@@ -7,7 +7,10 @@ import java.util.*
 import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,14 +31,8 @@ enum class SkateparkClaimed( val description: String) {
 }
 
 private fun String?.asSkateparkState() : SkateparkState? = SkateparkState.entries.find { it.description == this }
-private fun String?.asSkateparkClaimed() : SkateparkClaimed? = SkateparkClaimed.entries.find { it.description == this }
-
-
-// TODO: Gegebenen Code nachvollziehen und verstehen.
-// Die meisten Felder sind als nullable definiert. 'null' bedeutet 'Wert unbekannt'.
-// Wie ist das genau gemacht? Wie sehen die Update-Methoden aus? Was muss im UI gemacht werden?
-
-// NOTE: private set kann nur vom model einen change annehmen, ui muss update() verwenden
+// die Daten verwenden "YES"/"NO" (den Namen des Enums), 'description' ("ja"/"nein") ist nur für die Anzeige im UI
+private fun String?.asSkateparkClaimed() : SkateparkClaimed? = SkateparkClaimed.entries.find { it.name == this }
 
 class Skatepark(
     name: String? = null,
@@ -137,9 +134,6 @@ class Skatepark(
     private fun calculateFullAddress(): String? = listOfNotNull(street, zipPlace).joinToString(", ").ifBlank { null }
 
 
-    // hier die notwendigen update-Funktionen. Sie benutzen eine primitive Inputvalidierung.
-    // Wenn etwas syntaktisch falsch ist, ertönt ein 'Beep'
-    // todo: warum fehlt hier 'updateFullAddress' ?
     fun updateCount(valueAsText: String)     = valueAsText.ifInt { count = it }
     fun updateAvgRating(valueAsText: String) = valueAsText.ifDouble { avgRating = it }
     fun updateLongitude(valueAsText: String) = valueAsText.ifDouble { longitude = it }
@@ -169,13 +163,24 @@ class Skatepark(
     fun updateFid(valueAsText: String) { fid = valueAsText.ifBlank { null } }
     fun updateGoogleId(valueAsText: String) { googleId = valueAsText.ifBlank { null } }
 
-    // TODO: asyc load
-    fun loadImageBitmap(){
-        val url = imageUrl
-        if (bitmapLoaded || null == url) return
+    // der aktuell laufende Ladevorgang, damit er abgebrochen werden kann
+    private var imageJob : Job? = null
 
-        imageBitmap  = getImageBitmapFromUrl(url)
-        bitmapLoaded = true
+    // lädt das Bild asynchron
+    // Der Job wird zurückgegeben, damit im TestCase darauf gewartet werden kann.
+    fun loadImageBitmap() : Job? {
+        val url = imageUrl
+        if (bitmapLoaded || null == url) return null
+
+        imageJob?.cancel()   // ein alter Ladevorgang wird nicht mehr benötigt (z.B. nach 'updateImageURL')
+        imageJob = modelScope.launch {
+            val bitmap = getImageBitmapFromUrl(url)
+            if (isActive) {  // ein abgebrochener Job darf das Bild nicht mehr setzen
+                imageBitmap  = bitmap
+                bitmapLoaded = true
+            }
+        }
+        return imageJob
     }
 
     // see: https://kotlinlang.org/docs/object-declarations.html#companion-objects

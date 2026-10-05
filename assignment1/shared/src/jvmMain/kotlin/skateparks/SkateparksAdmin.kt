@@ -7,6 +7,7 @@ import skateparks.viewmodel.FederalAdministration
 fun main() {
     val model = FederalAdministration()
     model.sortSkateparksByZIPCode()
+    model.loadAllImageBitmaps()
 
     application {
         SkateparkAdministrationWindow(model)

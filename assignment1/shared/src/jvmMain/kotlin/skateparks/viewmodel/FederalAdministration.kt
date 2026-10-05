@@ -1,8 +1,10 @@
 package skateparks.viewmodel
 
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.random.Random
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.lazy.LazyListState
@@ -51,8 +53,7 @@ class FederalAdministration {
 
     fun sortSkateparksByZIPCode(){
         allSkateparks.sortWith { skatepark, skatepark1 ->
-            (skatepark.zipPlace?.take(4)?.toInt() ?: 0) -
-            (skatepark1.zipPlace?.take(4)?.toInt() ?: 0)
+            (skatepark.zipPlace?.take(4)?.toIntOrNull() ?: 0) - (skatepark1.zipPlace?.take(4)?.toIntOrNull() ?: 0)
         }
     }
 
@@ -69,13 +70,32 @@ class FederalAdministration {
         skatepark?.loadImageBitmap()
     }
 
-    // Sind diese Implementierungen korrekt? Todo: im TestCase absichern
+    fun isSelected(skatepark: Skatepark) = skateparkUnderControl == skatepark
+
+    // lädt die Bilder aller Skateparks asynchron, damit im Explorer die Thumbnails angezeigt werden
+    // Die Jobs werden zurückgegeben, damit im TestCase darauf gewartet werden kann.
+    fun loadAllImageBitmaps() : List<Job> = allSkateparks.mapNotNull { it.loadImageBitmap() }
+
+    // löschen ist nur möglich, wenn ein Skatepark selektiert ist
+    val deleteEnabled : Boolean
+        get() = null != skateparkUnderControl
+
+    // create, delete und save sind im FederalAdministrationTest abgesichert
     fun create(){
-        val skatepark = Skatepark(id=System.currentTimeMillis().toInt())
+        val skatepark = Skatepark(id = newId())
         allSkateparks.add(skatepark)
 
         skateparkUnderControl = skatepark
         scrollTo(skatepark)
+    }
+
+    // die id ist der Key im Explorer und muss deshalb eindeutig sein
+    private fun newId() : Int {
+        var id = Random.nextInt()
+        while (allSkateparks.any { it.id == id }) {
+            id = Random.nextInt()
+        }
+        return id
     }
 
     fun delete(){
@@ -94,17 +114,18 @@ class FederalAdministration {
         }
     }
 
-    fun save(){
+    // der Job wird zurückgegeben, damit im TestCase auf das Scrollen gewartet werden kann
+    fun save() : Job? {
         println("save")
-        scrollTo(allSkateparks.size - 1)
+        return skateparkUnderControl?.let { scrollTo(it) }
     }
 
-    private fun scrollTo(skatepark: Skatepark){
-        scrollTo(allSkateparks.indexOf(skatepark))
+    private fun scrollTo(skatepark: Skatepark) : Job {
+        return scrollTo(allSkateparks.indexOf(skatepark))
     }
 
-    private fun scrollTo(idx: Int){
-        uiScope.launch {
+    private fun scrollTo(idx: Int) : Job {
+        return uiScope.launch {
             explorerScrollState.animateScrollToItem(idx)
         }
     }

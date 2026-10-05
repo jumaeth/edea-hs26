@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test
 
 class SkateparkTest {
 
-    //todo: validate tests and fix tests and code to match a useful application
     private lateinit var skatepark: Skatepark
 
     @BeforeEach
@@ -14,7 +13,7 @@ class SkateparkTest {
         skatepark = Skatepark(id          = 999,
                               name        = "Skater's Paradise",
                               status      = "in Betrieb",
-                              claimed     = "ja",
+                              claimed     = "YES",
                               fulladdress = "Bahnhofstr. 6b, 5210 Windisch",
                               street      = "Bahnhofstr. 6b",
                               zipPlace    = "5210 Windisch")
