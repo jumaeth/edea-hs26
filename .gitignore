@@ -2,6 +2,8 @@
 .DS_Store
 *.iml
 
+docs/
+
 .kotlin
 .gradle
 **/build/

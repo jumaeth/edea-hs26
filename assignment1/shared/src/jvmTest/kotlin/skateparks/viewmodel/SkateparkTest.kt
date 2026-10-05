@@ -72,7 +72,59 @@ class SkateparkTest {
         assertNull(value)
     }
 
-    //todo: implement TestCase 'testIfDouble' analog zu 'testIfInt'
+    @Test
+    fun testIfDouble(){
+        //given
+        var value : Double? = null
+
+        //when
+        "1".ifDouble { value = it }
+
+        //then
+        assertEquals(1.0, value)
+
+        //when
+        "+2.5".ifDouble { value = it }
+
+        //then
+        assertEquals(2.5, value)
+
+        //when
+        "-2.5".ifDouble { value = it }
+
+        //then
+        assertEquals(-2.5, value)
+
+        //when
+        "2.".ifDouble { value = it }
+
+        //then
+        assertEquals(2.0, value)
+
+        //when
+        ".5".ifDouble { value = it }
+
+        //then
+        assertEquals(0.5, value)
+
+        //when
+        "-2’000.25".ifDouble { value = it }
+
+        //then: swiss grouping separator
+        assertEquals(-2000.25, value)
+
+        //when
+        "invalid input".ifDouble { value = it }
+
+        //then: value doesn't change on invalid input
+        assertEquals(-2000.25, value)
+
+        //when
+        "   ".ifDouble { value = it }
+
+        //then: blank input means 'Wert unbekannt'
+        assertNull(value)
+    }
 
 
     @Test

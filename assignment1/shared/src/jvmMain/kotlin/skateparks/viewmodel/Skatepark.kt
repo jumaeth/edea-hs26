@@ -35,6 +35,8 @@ private fun String?.asSkateparkClaimed() : SkateparkClaimed? = SkateparkClaimed.
 // Die meisten Felder sind als nullable definiert. 'null' bedeutet 'Wert unbekannt'.
 // Wie ist das genau gemacht? Wie sehen die Update-Methoden aus? Was muss im UI gemacht werden?
 
+// NOTE: private set kann nur vom model einen change annehmen, ui muss update() verwenden
+
 class Skatepark(
     name: String? = null,
     status: String? = null,
@@ -85,7 +87,7 @@ class Skatepark(
         private set
     var phones : String? by mutableStateOf(phones)
         private set
-    var claimed : SkateparkClaimed? by mutableStateOf(null)
+    var claimed : SkateparkClaimed? by mutableStateOf(claimed.asSkateparkClaimed())
         private set
     var count : Int? by mutableStateOf(count)
         private set
@@ -118,10 +120,21 @@ class Skatepark(
     var fid : String? by mutableStateOf(fid)
         private set
 
-    // todo: wenn diese beiden Attribute verändert werden muss das Attribut 'fullAddress' ebenfalls verändert werden
-    // implementieren Sie dies gemäss dem TestCase
-    fun updateStreet(valueAsText: String) { street = valueAsText.ifBlank { null } }
-    fun updateZipPlace(valueAsText: String) { zipPlace = valueAsText.ifBlank { null } }
+    // 'fulladdress' wird aus 'street' und 'zipPlace' berechnet und deshalb bei jeder Änderung neu gesetzt
+    fun updateStreet(valueAsText: String) {
+        street      = valueAsText.ifBlank { null }
+        fulladdress = calculateFullAddress()
+    }
+
+    fun updateZipPlace(valueAsText: String) {
+        zipPlace    = valueAsText.ifBlank { null }
+        fulladdress = calculateFullAddress()
+    }
+
+    /**
+     * entfernt unbekannte teile (null)
+     */
+    private fun calculateFullAddress(): String? = listOfNotNull(street, zipPlace).joinToString(", ").ifBlank { null }
 
 
     // hier die notwendigen update-Funktionen. Sie benutzen eine primitive Inputvalidierung.
@@ -156,9 +169,13 @@ class Skatepark(
     fun updateFid(valueAsText: String) { fid = valueAsText.ifBlank { null } }
     fun updateGoogleId(valueAsText: String) { googleId = valueAsText.ifBlank { null } }
 
+    // TODO: asyc load
     fun loadImageBitmap(){
-         //TODO: image asynchron laden
-        // Hinweis: verwenden Sie die bestehende Funktion für synchrones Laden (s.u.)
+        val url = imageUrl
+        if (bitmapLoaded || null == url) return
+
+        imageBitmap  = getImageBitmapFromUrl(url)
+        bitmapLoaded = true
     }
 
     // see: https://kotlinlang.org/docs/object-declarations.html#companion-objects
