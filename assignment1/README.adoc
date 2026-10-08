@@ -97,32 +97,32 @@ Es können in diesem Assignment maximal 25 Punkte erreicht werden. Der Fokus lie
 |===
 Bereich:Mögliche Punktzahl:erreichte Punkte
 *Funktionalitäten*:*12 Pt. total*: *total*
-Darstellung aller Schweizer SkateParks:2 Pt.:
-Editor (mit Header und Formular) zur Veränderung eines SkateParks:2 Pt.:
-Master-Detail-View (Selection-Handling Explorer/Editor):2 Pt.:
-Neuer SkatePark kann angelegt werden "Create":2 Pt.:
-Bestehender SkatePark kann gelöscht werden "Delete":2 Pt.:
-SkatePark kann modifiziert werden "Update" (inklusive Liveupdate im Header & Explorer):2 Pt.:
+Darstellung aller Schweizer SkateParks:2 Pt.:2
+Editor (mit Header und Formular) zur Veränderung eines SkateParks:2 Pt.:2
+Master-Detail-View (Selection-Handling Explorer/Editor):2 Pt.:2
+Neuer SkatePark kann angelegt werden "Create":2 Pt.:2
+Bestehender SkatePark kann gelöscht werden "Delete":2 Pt.:2
+SkatePark kann modifiziert werden "Update" (inklusive Liveupdate im Header & Explorer):2 Pt.:2
 
 *Generische Funktion*:*3 Pt. total*: *total*
-Funktion 'GenericExplorer' ist implementiert:2 Pt.:
-'GenericExplorer' wird verwendet: 1 Pt.:
+Funktion 'GenericExplorer' ist implementiert:2 Pt.:2
+'GenericExplorer' wird verwendet: 1 Pt.:1
 
 *Architektur*:*5 Pt. total*: *total*
-Klare Aufgabenverteilung zwischen Model und View:3 Pt.:
-Saubere Aufteilung der Composables in Sub-Composables:2 Pt.:
+Klare Aufgabenverteilung zwischen Model und View:3 Pt.:3
+Saubere Aufteilung der Composables in Sub-Composables:2 Pt.:2
 
 *Test-Cases*:*3 Pt. Total*: *total*
-Todos in `SkateParkTest` erledigt:1 Pt.:
-`FederalAdministrationTest`deckt die gesamte Funktionalität von `FederalAdministration`ab:2 Pt.:
+Todos in `SkateParkTest` erledigt:1 Pt.:1
+`FederalAdministrationTest`deckt die gesamte Funktionalität von `FederalAdministration`ab:2 Pt.:2
 
 *Code Dokumentation*:*2 Pt. Total*: *total*
-Code Dokumentation in 'SharedComposable.kt' hält sich an das KDoc-Format und ist aussagekräftig: 1 Pt.:
-Alle verwendeten `SharedComposables` sind korrekt dokumentiert: 1 Pt.:
+Code Dokumentation in 'SharedComposable.kt' hält sich an das KDoc-Format und ist aussagekräftig: 1 Pt.:1
+Alle verwendeten `SharedComposables` sind korrekt dokumentiert: 1 Pt.:1
 |===
 
 Die Note wird wie folgt berechnet und macht 20% der Gesamtnote aus.
 
-Note = ((Erreichte Punkte / 25) * 5) + 1
+Note = ((25 / 25) * 5) + 1 = 6.0
 
 
